@@ -31,7 +31,7 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
+          username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
 
       # 这个 Action 会极其智能地根据你的分支或者 Tag 自动生成镜像的 Tag 标签
@@ -39,7 +39,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ secrets.DOCKER_USERNAME }}/go-path-proxy
+          images: ${{ vars.DOCKER_USERNAME }}/go-path-proxy
           # master 分支会自动编出 :latest ；如果你打了个 v1.0.0 的 tag 就会编出 :v1.0.0
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
