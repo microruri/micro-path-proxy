@@ -39,7 +39,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ vars.DOCKER_USERNAME }}/go-path-proxy
+          images: ${{ vars.DOCKER_USERNAME }}/micro-path-proxy
           # master 分支会自动编出 :latest ；如果你打了个 v1.0.0 的 tag 就会编出 :v1.0.0
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}

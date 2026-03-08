@@ -9,7 +9,7 @@ COPY go.mod ./
 COPY *.go ./
 
 # 静态编译，关闭 CGO，剥离调试信息以大幅缩减体积
-RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o go-path-proxy main.go
+RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o micro-path-proxy main.go
 
 # 第二阶段：构建极其轻量、安全的纯净运行环境
 FROM alpine:latest
@@ -18,7 +18,7 @@ FROM alpine:latest
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 WORKDIR /app
-COPY --from=builder /app/go-path-proxy .
+COPY --from=builder /app/micro-path-proxy .
 
 # 为了安全起见，建立非 root 用户来运行程序，防止容器逃逸
 RUN adduser -D proxyuser
@@ -28,4 +28,4 @@ USER proxyuser
 EXPOSE 5000
 
 # 默认将参数抛给被执行的二进制文件
-ENTRYPOINT ["./go-path-proxy"]
+ENTRYPOINT ["./micro-path-proxy"]
