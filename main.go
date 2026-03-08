@@ -17,6 +17,7 @@ func main() {
 	host := flag.String("host", "127.0.0.1", "Listen host")
 	whiteRegexStr := flag.String("white-regex", "^(github\\.com|.*\\.githubusercontent\\.com)$", "Whitelist regex pattern")
 	secretPath := flag.String("secret-path", "/secret-path/", "Secret path for the proxy endpoint")
+	verbose := flag.Bool("verbose", false, "Enable verbose logging")
 
 	// 解析命令行参数
 	flag.Parse()
@@ -37,6 +38,13 @@ func main() {
 	}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if *verbose {
+			log.Printf("[VERBOSE] Incoming request: %s %s from %s", r.Method, r.URL.RequestURI(), r.RemoteAddr)
+			for k, v := range r.Header {
+				log.Printf("[VERBOSE] Header - %s: %v", k, v)
+			}
+		}
+
 		// 1. 验证路径 (Secret Path)
 		if !strings.HasPrefix(r.URL.Path, path) {
 			http.Error(w, "Not Found\n", http.StatusNotFound)
@@ -124,6 +132,7 @@ func main() {
 	fmt.Printf("🔒 Secret Path : %s\n", path)
 	fmt.Printf("🛡️  Whitelist   : %s (Regex mode)\n", *whiteRegexStr)
 	fmt.Printf("📡 Listen Addr : http://%s\n", listenAddr)
+	fmt.Printf("🔍 Verbose     : %v\n", *verbose)
 	fmt.Println("=======================================")
 
 	if err := http.ListenAndServe(listenAddr, nil); err != nil {
